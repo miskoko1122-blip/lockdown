@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مساحة كتابة - LockDown</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: #121212; color: #e0e0e0; display: flex; flex-direction: column; height: 100vh; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #333; margin-bottom: 15px; }
+        .stats { font-size: 14px; color: #888; }
+        .actions { display: flex; gap: 10px; }
+        button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .btn-copy { background: #2d2d2d; color: #fff; }
+        .btn-copy:hover { background: #3d3d3d; }
+        .btn-clear { background: #4a2525; color: #ff8a8a; }
+        .btn-exit { background: #d32f2f; color: #fff; }
+        .btn-exit:hover { background: #b71c1c; }
+        textarea { flex: 1; width: 100%; background: #1e1e1e; color: #fff; border: 1px solid #333; border-radius: 8px; padding: 20px; font-size: 18px; line-height: 1.6; resize: none; outline: none; }
+        textarea:focus { border-color: #555; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="stats" id="wordCount">الكلمات: 0 | الحروف: 0</div>
+        <div class="actions">
+            <button class="btn-copy" onclick="copyText()">نسخ النص</button>
+            <button class="btn-clear" onclick="clearText()">مسح</button>
+            <button class="btn-exit" onclick="exitBrowser()">خروج من المتصفح ✕</button>
+        </div>
+    </header>
+    <textarea id="editor" placeholder="اكتب هنا... (يتم الحفظ تلقائياً)"></textarea>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const wordCount = document.getElementById('wordCount');
+
+        // استرجاع النص المحفوظ
+        editor.value = localStorage.getItem('ldb_notes') || '';
+        updateStats();
+
+        editor.addEventListener('input', () => {
+            localStorage.setItem('ldb_notes', editor.value);
+            updateStats();
+        });
+
+        function updateStats() {
+            const text = editor.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            wordCount.textContent = `الكلمات: ${words} | الحروف: ${editor.value.length}`;
+        }
+
+        function copyText() {
+            editor.select();
+            document.execCommand('copy');
+            alert('تم نسخ النص!');
+        }
+
+        function clearText() {
+            if (confirm('متأكد تبي تمسح كل المكتوب؟')) {
+                editor.value = '';
+                localStorage.removeItem('ldb_notes');
+                updateStats();
+            }
+        }
+
+        function exitBrowser() {
+            if (confirm('هل تريد إغلاق متصفح LockDown الآن؟')) {
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>
